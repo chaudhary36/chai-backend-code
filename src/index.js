@@ -16,3 +16,9 @@ DBconnection()
 .catch((err)=>{
     console.log(`Connection through the DB is failed!! : `, err);
 })
+
+// importing userRouter
+import UserRouter from "./routes/user.routes.js"
+
+
+app.use("/api/v1/users" , UserRouter)
