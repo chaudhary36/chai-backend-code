@@ -4,9 +4,9 @@ import fs from "fs";
           
           
 cloudinary.config({ 
-  cloud_name: 'dtxn1cbx6', 
-  api_key: '291956989252498', 
-  api_secret: 'TGe-6j2V8qX5IcRRS6MCc2cJmNI' 
+  cloud_name: CLOUDINARY_CLOUD_NAME, 
+  api_key: CLOUDINARY_CLOUD_KEY, 
+  api_secret: CLOUDINARY_CLOUD_SECRET  // Need to change when want to use i mean fix it as soon!
 });
 
 
