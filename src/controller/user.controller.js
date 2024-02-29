@@ -3,10 +3,11 @@ import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.models.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { response } from "express";
 
 const registerUser = asyncHandler(async (req, res) => {
   const { fullName, username, email, password } = req.body;
-  console.log("Email: ", email);
+  // console.log("Email: ", email);
 
   // get user details from frontend
   // validation - not empty
@@ -24,7 +25,7 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All fields are required!");
   }
 
-  const existedUser = User.findOne({
+  const existedUser = await User.findOne({
     $or: [{ username }, { email }],
   });
 
@@ -32,33 +33,36 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(409, "This user is already existed ");
   }
 
-  const avatarLocalPath = req.files?.avatar[0]?.path;
+  const avatarLocalPath = req.files?.avatar[0]?.path
   const coverImageLocalPath = req.files?.coverImage[0]?.path;
 
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar is needed!");
-  }
+  } 
 
   // let upload the avatar and the coverImage on the cloudinary by the method which we had alreay created !! first import then use ..
 
-  const avatarUploaded = await uploadOnCloudinary(avatarLocalPath);
+  const avatar = await uploadOnCloudinary(avatarLocalPath);
   const coverImageUploaded = await uploadOnCloudinary(coverImageLocalPath);
 
-  if (!avatarUploaded) {
-    throw new ApiError(400, "Avatar is required!");
-  }
+  if (!avatar) {
+    throw new ApiError(400, "Avatar is required hai!" );
+  } 
 
   const user = await User.create({
     username: username.toLowerCase(),
+    avatar: avatar.url,
     fullName,
     email,
     password,
-    avatar: avatar.url,
     coverImage: coverImageUploaded?.url || "",
   });
 
-  const createdUser = await user
-    .findOne(user._id)
+  if(user){
+    console.log("Done User is created !");
+  }
+
+  const createdUser = await User.findOne(user._id)
     .select("-password -refreshToken");
 
   if (!createdUser) {
